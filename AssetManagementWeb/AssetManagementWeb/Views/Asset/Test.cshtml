@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Test";
+}
+@section scripts {
+
+    <script src="~/Scripts/Application/Logic.js"></script>
+    <script>
+        $(function () {
+            initAssetAssignment();
+        })
+    </script>
+}
+
+<h2>Test Json interface</h2>
+<p>
+    <input id="LocationCode" type="text" placeholder="locationcode" />
+
+</p>
+<p>
+    <input id="AssetCode" type="text" placeholder="assetcode" />
+</p>
+<button id="AssignAssetButton">Assign Asset</button>
