@@ -37,6 +37,7 @@ namespace AssetManagementWeb.Controllers
         [HttpPost]
         public JsonResult AssignLocation()
         {
+
             string json = Request.InputStream.ReadToEnd();
             AssignLocationModel inputData =
             JsonConvert.DeserializeObject<AssignLocationModel>(json);
