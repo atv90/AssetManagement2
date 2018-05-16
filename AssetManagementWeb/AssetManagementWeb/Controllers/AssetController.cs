@@ -4,6 +4,7 @@ using AssetManagementWeb.Utilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -22,18 +23,44 @@ namespace AssetManagementWeb.Controllers
         {
             return View();
         }
-        // GET: Asset/Details/5
-        public ActionResult Details(int id)
+        
+        //DAY2
+        public  ActionResult List()
         {
-            return View();
-        }
+            //listan muodostus
+            List<LocatedAssetsViewModel> model = new List<LocatedAssetsViewModel>();
 
-        // GET: Asset/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+            //TIETOKANTAYHTEYS
+            Asset2Entities entities = new Asset2Entities();
+            try
+            {
+                //haetaan tietoja tietokannasta
+                List<AssetLocations> assets = entities.AssetLocations.ToList();
+                //muodostetaan näkymämalli tietokannan rivien pohjalta
+                CultureInfo fiFi = new CultureInfo("fi-Fi");
+                foreach (AssetLocations asset in assets)
+                {
+                    LocatedAssetsViewModel view = new LocatedAssetsViewModel();
+                    view.Id = asset.Id;
+                    view.LocationCode = asset.AssetLocation.Code;
+                    view.LocationName = asset.AssetLocation.Name;
+                    view.AssetCode = asset.Assets.Code;
+                    view.AssetName = asset.Assets.Type + ": " + asset.Assets.Model;
+                    view.LastSeen = asset.LastSeen.Value.ToString(fiFi);
+                    
+                    model.Add(view);
+                }
 
+            }
+            //muistinvapautus
+            finally
+            {
+                entities.Dispose();
+            }
+            //palautetaan ylempänä luotu model-niminen lista
+            return View(model);
+        }
+        //DAY1
         [HttpPost]
         public JsonResult AssignLocation()
         {
@@ -59,7 +86,7 @@ namespace AssetManagementWeb.Controllers
 
                 if ((locationId > 0) && (assetId > 0))
                 {
-                    // tallennetaan uusi rivi aikaleiman kanssa kantaan
+                    // UUDEN RIVIN TALLENTAMINEN aikaleiman kanssa TIETOKANTAAN
                     AssetLocations newEntry = new AssetLocations();
                     newEntry.LocationId = locationId;
                     newEntry.AssetId = assetId;
@@ -85,64 +112,6 @@ namespace AssetManagementWeb.Controllers
             return Json(result);
         }
 
-        // POST: Asset/Create
-        [HttpPost]
-        public ActionResult Create(FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Asset/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Asset/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Asset/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Asset/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        
     }
 }
