@@ -5,6 +5,7 @@ var AssignLocationModel = /** @class */ (function () {
     return AssignLocationModel;
 }());
 function initAssetAssignment() {
+    //alustetaan data
     $("#AssignAssetButton").click(function () {
         var locationCode = $("#LocationCode").val();
         var assetCode = $("#AssetCode").val();
@@ -12,9 +13,10 @@ function initAssetAssignment() {
         var data = new AssignLocationModel();
         data.LocationCode = locationCode;
         data.AssetCode = assetCode;
-        // lähetetään JSON-muotoista dataa palvelimelle
+        // lähetetään JSON-muotoista dataa palvelimelle ajax-komennolla
         $.ajax({
             type: "POST",
+            //url:in pitää viitata oikeaan kontrolleriin ja siellä olevaan kohtaan
             url: "/Asset/AssignLocation",
             data: JSON.stringify(data),
             contentType: "application/json",

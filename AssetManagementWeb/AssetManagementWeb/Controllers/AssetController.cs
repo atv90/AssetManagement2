@@ -60,16 +60,54 @@ namespace AssetManagementWeb.Controllers
             //palautetaan ylempänä luotu model-niminen lista
             return View(model);
         }
+
+        public ActionResult ListJson()
+        {
+            //listan muodostus
+            List<LocatedAssetsViewModel> model = new List<LocatedAssetsViewModel>();
+
+            //TIETOKANTAYHTEYS
+            Asset2Entities entities = new Asset2Entities();
+            try
+            {
+                //haetaan tietoja tietokannasta
+                List<AssetLocations> assets = entities.AssetLocations.ToList();
+                //muodostetaan näkymämalli tietokannan rivien pohjalta
+                CultureInfo fiFi = new CultureInfo("fi-Fi");
+                foreach (AssetLocations asset in assets)
+                {
+                    LocatedAssetsViewModel view = new LocatedAssetsViewModel();
+                    view.Id = asset.Id;
+                    view.LocationCode = asset.AssetLocation.Code;
+                    view.LocationName = asset.AssetLocation.Name;
+                    view.AssetCode = asset.Assets.Code;
+                    view.AssetName = asset.Assets.Type + ": " + asset.Assets.Model;
+                    view.LastSeen = asset.LastSeen.Value.ToString(fiFi);
+
+                    model.Add(view);
+                }
+
+            }
+            //muistinvapautus
+            finally
+            {
+                entities.Dispose();
+            }
+            //palautetaan ylempänä luotu model-niminen lista
+            return Json(model, JsonRequestBehavior.AllowGet);
+        }
+
+
         //DAY1
         [HttpPost]
-        public JsonResult AssignLocation()
+        public JsonResult AssignLocation() //JsonResult=palauttaa Jsonia, AssignLocation=rutiinin nimi
         {
 
-            string json = Request.InputStream.ReadToEnd();
+            string json = Request.InputStream.ReadToEnd(); //laajennusmetodi, WebUtilities.cs luokkaan
             AssignLocationModel inputData =
             JsonConvert.DeserializeObject<AssignLocationModel>(json);
 
-            bool success = false;
+            bool success = false; //oletetaan ettei onnistu
             string error = "";
             Asset2Entities entities = new Asset2Entities();
             try
@@ -95,7 +133,7 @@ namespace AssetManagementWeb.Controllers
                     entities.AssetLocations.Add(newEntry);
                     entities.SaveChanges();
 
-                    success = true;
+                    success = true; //muutetaan success=true
                 }
             }
             catch (Exception ex)
